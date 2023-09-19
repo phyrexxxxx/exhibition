@@ -1,10 +1,11 @@
 package main
 
 import (
-	"fmt"
 	"log"
+	"net/http"
 	"os"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/joho/godotenv"
 )
 
@@ -17,5 +18,13 @@ func main() {
 		log.Fatal("PORT environment variable not set")
 	}
 
-	fmt.Println("Port is set to: " + portString)
+	router := chi.NewRouter()
+
+	server := &http.Server{
+		Handler: router,
+		Addr:    ":" + portString,
+	}
+
+	log.Printf("Server serving on port %v", portString)
+	log.Fatal(server.ListenAndServe())
 }
