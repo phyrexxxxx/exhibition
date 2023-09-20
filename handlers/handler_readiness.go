@@ -6,6 +6,6 @@ import (
 	"github.com/phyrexxxxx/exhibition/utils"
 )
 
-func handlerReadiness(w http.ResponseWriter, r *http.Request) {
+func HandlerReadiness(w http.ResponseWriter, r *http.Request) {
 	utils.RespondWithJSON(w, http.StatusOK, map[string]string{"status": "ok"})
 }
