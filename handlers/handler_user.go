@@ -8,6 +8,7 @@ import (
 
 	"github.com/google/uuid"
 
+	"github.com/phyrexxxxx/exhibition/auth"
 	"github.com/phyrexxxxx/exhibition/config"
 	"github.com/phyrexxxxx/exhibition/internal/database"
 	"github.com/phyrexxxxx/exhibition/utils"
@@ -44,6 +45,24 @@ func (apiCfg *HandlerApiConfig) HandlerCreateUser(w http.ResponseWriter, r *http
 	})
 	if err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Error creating user: %v", err))
+		return
+	}
+
+	// 201 Status Created
+	utils.RespondWithJSON(w, http.StatusCreated, config.DBUserToUser(user))
+}
+
+func (apiCfg *HandlerApiConfig) HandlerGetUser(w http.ResponseWriter, r *http.Request) {
+	apiKey, err := auth.GetApiKey(r.Header)
+	if err != nil {
+		// 401 Status Unauthorized
+		utils.RespondWithError(w, http.StatusUnauthorized, fmt.Sprintf("Unauthorized: %v", err))
+		return
+	}
+	user, err := apiCfg.DB.GetUserByApiKey(r.Context(), apiKey)
+	if err != nil {
+		// 400 Status Bad Request
+		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Cannot Get User: %v", err))
 		return
 	}
 
