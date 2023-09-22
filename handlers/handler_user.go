@@ -8,16 +8,10 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/phyrexxxxx/exhibition/auth"
-	"github.com/phyrexxxxx/exhibition/config"
 	"github.com/phyrexxxxx/exhibition/internal/database"
+	"github.com/phyrexxxxx/exhibition/models"
 	"github.com/phyrexxxxx/exhibition/utils"
 )
-
-// use Embedding to prevent "cannot define new methods on non-local type config.ApiConfig" error
-type HandlerApiConfig struct {
-	*config.ApiConfig
-}
 
 func (apiCfg *HandlerApiConfig) HandlerCreateUser(w http.ResponseWriter, r *http.Request) {
 	// The json:"name" tag is used to specify how the field should be serialized when converting the struct to JSON
@@ -49,22 +43,9 @@ func (apiCfg *HandlerApiConfig) HandlerCreateUser(w http.ResponseWriter, r *http
 	}
 
 	// 201 Status Created
-	utils.RespondWithJSON(w, http.StatusCreated, config.DBUserToUser(user))
+	utils.RespondWithJSON(w, http.StatusCreated, models.DBUserToUser(user))
 }
 
-func (apiCfg *HandlerApiConfig) HandlerGetUser(w http.ResponseWriter, r *http.Request) {
-	apiKey, err := auth.GetApiKey(r.Header)
-	if err != nil {
-		// 401 Status Unauthorized
-		utils.RespondWithError(w, http.StatusUnauthorized, fmt.Sprintf("Unauthorized: %v", err))
-		return
-	}
-	user, err := apiCfg.DB.GetUserByApiKey(r.Context(), apiKey)
-	if err != nil {
-		// 400 Status Bad Request
-		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Cannot Get User: %v", err))
-		return
-	}
-
-	utils.RespondWithJSON(w, http.StatusOK, config.DBUserToUser(user))
+func (apiCfg *HandlerApiConfig) HandlerGetUser(w http.ResponseWriter, r *http.Request, user database.User) {
+	utils.RespondWithJSON(w, http.StatusOK, models.DBUserToUser(user))
 }

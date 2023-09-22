@@ -11,6 +11,7 @@ import (
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 
+	"github.com/phyrexxxxx/exhibition/auth"
 	"github.com/phyrexxxxx/exhibition/config"
 	"github.com/phyrexxxxx/exhibition/handlers"
 	"github.com/phyrexxxxx/exhibition/internal/database"
@@ -43,6 +44,9 @@ func main() {
 	handlerApiCfg := handlers.HandlerApiConfig{
 		ApiConfig: &apiCfg,
 	}
+	authApiCfg := auth.AuthApiConfig{
+		ApiConfig: &apiCfg,
+	}
 
 	router := chi.NewRouter()
 
@@ -59,7 +63,7 @@ func main() {
 	v1Router.Get("/healthz", handlers.HandlerReadiness)
 	v1Router.Get("/err", handlers.HandlerErr)
 	v1Router.Post("/users", handlerApiCfg.HandlerCreateUser)
-	v1Router.Get("/users", handlerApiCfg.HandlerGetUser)
+	v1Router.Get("/users", authApiCfg.MiddlewareAuth(handlerApiCfg.HandlerGetUser))
 
 	router.Mount("/v1", v1Router)
 
