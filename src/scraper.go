@@ -9,7 +9,7 @@ import (
 	"github.com/phyrexxxxx/exhibition/internal/database"
 )
 
-// `startScraping“ starts the scraping process using the provided database connection,
+// `startScraping` starts the scraping process using the provided database connection,
 // concurrency level, and time duration between each request.
 //
 // Parameters:
