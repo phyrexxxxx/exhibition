@@ -45,3 +45,13 @@ func (apiCfg *HandlerApiConfig) HandlerCreateFeed(w http.ResponseWriter, r *http
 	// 201 Status Created
 	utils.RespondWithJSON(w, http.StatusCreated, models.DBFeedToFeed(feed))
 }
+
+func (apiCfg *HandlerApiConfig) HandlerGetAllFeeds(w http.ResponseWriter, r *http.Request) {
+	feeds, err := apiCfg.DB.GetAllFeeds(r.Context())
+	if err != nil {
+		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Cannot get all feeds: %v", err))
+		return
+	}
+
+	utils.RespondWithJSON(w, http.StatusOK, models.DBFeedsToFeeds(feeds))
+}
