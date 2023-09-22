@@ -50,3 +50,30 @@ func DBFeedFollowsToFeedFollows(dbFeedFollows []database.FeedFollow) []FeedFollo
 	}
 	return feedFollows
 }
+
+func DBPostToPost(post database.Post) Post {
+	// deal with "cannot use post.Description (variable of type sql.NullString) as *string value in struct literal" error
+	var description *string
+	if post.Description.Valid {
+		description = &post.Description.String
+	}
+
+	return Post{
+		ID:          post.ID,
+		CreatedAt:   post.CreatedAt,
+		UpdatedAt:   post.UpdatedAt,
+		Title:       post.Title,
+		Url:         post.Url,
+		Description: description,
+		PublishedAt: post.PublishedAt,
+		FeedID:      post.FeedID,
+	}
+}
+
+func DBPostsToPosts(dbPosts []database.Post) []Post {
+	posts := []Post{}
+	for _, dbPost := range dbPosts {
+		posts = append(posts, DBPostToPost(dbPost))
+	}
+	return posts
+}

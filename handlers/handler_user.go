@@ -49,3 +49,26 @@ func (apiCfg *HandlerApiConfig) HandlerCreateUser(w http.ResponseWriter, r *http
 func (apiCfg *HandlerApiConfig) HandlerGetUser(w http.ResponseWriter, r *http.Request, user database.User) {
 	utils.RespondWithJSON(w, http.StatusOK, models.DBUserToUser(user))
 }
+
+func (apiCfg *HandlerApiConfig) HandlerGetPostsByUser(w http.ResponseWriter, r *http.Request, user database.User) {
+	type parameters struct {
+		Limit int `json:"limit"`
+	}
+	decoder := json.NewDecoder(r.Body)
+	params := parameters{}
+	err := decoder.Decode(&params)
+	if err != nil {
+		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Error parsing JSON: %v", err))
+		return
+	}
+
+	posts, err := apiCfg.DB.GetPostsByUser(r.Context(), database.GetPostsByUserParams{
+		UserID: user.ID,
+		Limit:  int32(params.Limit),
+	})
+	if err != nil {
+		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Error getting posts: %v", err))
+		return
+	}
+	utils.RespondWithJSON(w, http.StatusOK, models.DBPostsToPosts(posts))
+}
