@@ -13,3 +13,14 @@ func DBUserToUser(user database.User) User {
 		ApiKey:    user.ApiKey,
 	}
 }
+
+func DBFeedToFeed(feed database.Feed) Feed {
+	return Feed{
+		ID:        feed.ID,
+		CreatedAt: feed.CreatedAt,
+		UpdatedAt: feed.UpdatedAt,
+		Name:      feed.Name,
+		Url:       feed.Url,
+		UserID:    feed.UserID,
+	}
+}
