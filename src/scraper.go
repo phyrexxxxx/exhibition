@@ -1,4 +1,4 @@
-package main
+package src
 
 import (
 	"context"
@@ -19,7 +19,7 @@ import (
 // - `db`: a pointer to the `database.Queries` struct representing the database connection.
 // - `concurrency`: an integer indicating the number of goroutines to use for scraping.
 // - `timeBetweenRequest`: a `time.Duration` specifying the duration between each scraping request.
-func startScraping(db *database.Queries, concurrency int, timeBetweenRequest time.Duration) {
+func StartScraping(db *database.Queries, concurrency int, timeBetweenRequest time.Duration) {
 	log.Printf("Scraping on %v goroutines every %s duration", concurrency, timeBetweenRequest)
 
 	// creates a new ticker that will fire every `timeBetweenRequest` duration

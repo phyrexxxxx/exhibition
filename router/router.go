@@ -1,56 +1,13 @@
-package main
+package router
 
 import (
-	"database/sql"
-	"log"
-	"net/http"
-	"os"
-	"time"
-
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/cors"
-	"github.com/joho/godotenv"
-	_ "github.com/lib/pq"
-
 	"github.com/phyrexxxxx/exhibition/auth"
-	"github.com/phyrexxxxx/exhibition/config"
 	"github.com/phyrexxxxx/exhibition/handlers"
-	"github.com/phyrexxxxx/exhibition/internal/database"
 )
 
-func main() {
-	godotenv.Load("../.env")
-
-	portString := os.Getenv("PORT")
-	if portString == "" {
-		log.Fatal("PORT environment variable not set")
-	}
-
-	dbURL := os.Getenv("DB_URL")
-	if dbURL == "" {
-		log.Fatal("DB_URL environment variable not set")
-	}
-
-	// opens a connection to a PostgreSQL database
-	db, err := sql.Open("postgres", dbURL)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// Embedding
-	dbQueries := database.New(db)
-	apiCfg := config.ApiConfig{
-		DB: dbQueries,
-	}
-	handlerApiCfg := handlers.HandlerApiConfig{
-		ApiConfig: &apiCfg,
-	}
-	authApiCfg := auth.AuthApiConfig{
-		ApiConfig: &apiCfg,
-	}
-
-	go startScraping(dbQueries, 10, time.Minute)
-
+func InitRouter(handlerApiCfg handlers.HandlerApiConfig, authApiCfg auth.AuthApiConfig) *chi.Mux {
 	router := chi.NewRouter()
 
 	router.Use(cors.Handler(cors.Options{
@@ -76,11 +33,5 @@ func main() {
 
 	router.Mount("/v1", v1Router)
 
-	server := &http.Server{
-		Handler: router,
-		Addr:    ":" + portString,
-	}
-
-	log.Printf("Server serving on port %v", portString)
-	log.Fatal(server.ListenAndServe())
+	return router
 }
